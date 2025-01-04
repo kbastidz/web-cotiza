@@ -1,22 +1,35 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy Jekyll site
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main  # O la rama que estés utilizando
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+
       - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          flatten: true
-          folder: dist
-          branch: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: bundle install
+
+      - name: Build the site
+        run: bundle exec jekyll build
+
+      - name: Copy files to docs
+        run: |
+          cp -r dist/* docs/  # Copiar los archivos de dist a docs
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add docs/
+          git commit -m "Deploy site"
+          git push origin main
