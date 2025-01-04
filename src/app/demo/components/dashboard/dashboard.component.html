@@ -1,0 +1,112 @@
+<style>
+  .empresa-logo {
+    width: 150px;
+    margin-bottom: 15px;
+  }
+
+  .empresa-header {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .empresa-logo {
+    margin-right: 20px;
+  }
+
+  .empresa-info {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+
+<div class="col-12 md:col-12">
+  <div class="card p-fluid">
+    <header class="empresa-header">
+      <img src="assets/logo.webp" alt="Logo de la Empresa" class="empresa-logo">
+      <div class="empresa-info">
+        <h2>Cotización de Proyecto</h2>
+        <p><strong>{{lblEmpresa}}</strong></p>
+        <p>{{lblTelefono}}</p>
+        <p>{{lblDireccion}}</p>
+        <p>Fecha de Cotización: {{fechaCotizacion}}</p>
+      </div>
+    </header>
+    <hr>
+    <div class="p-fluid p-formgrid grid">
+      <div class="field col-12 md:col-6">
+        <label htmlFor="firstname2">Cliente</label>
+        <input pInputText id="nombreCliente" [(ngModel)]="nombreCliente" name="nombreCliente" type="text" />
+      </div>
+      <div class="field col-12 md:col-6">
+        <label htmlFor="firstname2">Dirección</label>
+        <input pInputText id="direccionCliente" [(ngModel)]="direccionCliente" name="direccionCliente" type="text" />
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label for="tipoProyecto">Tipo de Proyecto</label>
+        <p-dropdown [options]="listTipoProyecto" optionLabel="name" [(ngModel)]="tipoProyecto"></p-dropdown>
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label for="tipoConstruccion">Tipo de Construcción</label>
+        <p-dropdown [options]="listTipoConstruccion" optionLabel="name" [(ngModel)]="tipoConstruccion"></p-dropdown>
+      </div>
+
+      <div class="field col-12 md:col-12">
+        <label htmlFor="lastname2">Descripción del Proyecto</label>
+        <textarea id="descripcionProyecto" [(ngModel)]="descripcionProyecto" name="descripcionProyecto" rows="5"
+          cols="30" placeholder="Your Message" pInputTextarea></textarea>
+      </div>
+
+    </div>
+
+    <div class="cotizacion-container" id="cotizacion-container">
+      <form (ngSubmit)="calcularCotizacion()">
+        <!-- Información de la Empresa -->
+        <p-table #dt [value]="materiales" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['Material','PrecioUnitario','Cantidad','Total']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          <ng-template pTemplate="caption">              
+                <h3>Total Cotización: ${{ totalCotizacion }}</h3>
+                <button pButton pRipple  icon="pi pi-plus" class="p-button-rounded p-button-primary p-button-outlined mr-2" (click)="agregarMaterial()"></button>
+                            
+                <!--<button [disabled]="!nombreCliente || !descripcionProyecto || !tipoProyecto || !tipoConstruccion || totalCotizacion === 0"
+                pButton pRipple type="submit" icon="pi pi-check" class="p-button-rounded p-button-outlined"></button>-->
+                <button (click)="generarPDF()" pButton pRipple type="button" icon="pi pi-file-pdf" class="p-button-rounded p-button-success p-button-outlined"></button>              
+          </ng-template>
+          <ng-template pTemplate="header">
+              <tr>           
+                  <th pSortableColumn="Material">Material <p-sortIcon field="Material"></p-sortIcon></th>
+                  <th pSortableColumn="Cantidad">Cantidad <p-sortIcon field="Cantidad"></p-sortIcon></th>
+                  <th pSortableColumn="PrecioUnitario">Precio Unitario <p-sortIcon field="PrecioUnitario"></p-sortIcon></th>
+                  <th pSortableColumn="Total">Total <p-sortIcon field="Total"></p-sortIcon></th>
+                  <th></th>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-material let-i="rowIndex">
+            <tr >
+              <td><input pInputText type="text" [(ngModel)]="material.nombre" name="nombre{{i}}" required></td>
+              <td>
+                <input pInputText [(ngModel)]="material.cantidad" name="cantidad{{i}}" min="0" type="number" (ngModelChange)="calcularCotizacion()"/>
+              </td>
+              <td>
+                <p-inputNumber
+                  [(ngModel)]="material.precio"
+                  name="precio{{i}}"
+                  mode="decimal"
+                  (ngModelChange)="calcularCotizacion()"
+                  minFractionDigits="2"
+                  maxFractionDigits="2"
+                ></p-inputNumber>
+              </td>              
+              <td>{{ material.total }}</td>
+              <td>
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="eliminarMaterial(i)"></button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>    
+      </form>    
+    </div>
+
+  </div>
+</div>
+
