@@ -34,6 +34,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages  # Rama en la que se publicará la app
-          folder: dist/web-cotiza  # Carpeta generada por el build de Angular
+          folder: dist  # Carpeta generada por el build de Angular
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token de GitHub para permitir el acceso
