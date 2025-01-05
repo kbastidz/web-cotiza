@@ -1,0 +1,39 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Se activa cuando hay un push a la rama main
+  pull_request:
+    branches:
+      - main  # Se activa cuando se hace un pull request hacia la rama main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Entorno de ejecución en Ubuntu
+
+    steps:
+      # Paso 1: Checkout del código fuente del repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Paso 2: Configuración de Node.js (usando la versión 18.x recomendada para Angular 17)
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'  # Usa Node.js 18.x
+
+      # Paso 3: Instalación de dependencias y construcción de la aplicación Angular
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build --prod  # Cambia si tu comando de build es diferente
+
+      # Paso 4: Desplegar en GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages  # Rama en la que se publicará la app
+          folder: dist/<nombre-del-proyecto>  # Carpeta generada por el build de Angular
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token de GitHub para permitir el acceso
