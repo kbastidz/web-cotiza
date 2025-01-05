@@ -26,5 +26,5 @@ jobs:
         with:
           flatten: true
           folder: docs  # Asegurarse de que se sirvan los archivos desde docs
-          branch: gh-pages
+          branch: gh-pages  # Esta es la rama donde se debe desplegar
           token: ${{ secrets.GITHUB_TOKEN }}
