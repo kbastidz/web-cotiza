@@ -27,13 +27,13 @@ jobs:
       - name: Install dependencies and build
         run: |
           npm install
-          npm run build --prod  # Cambia si tu comando de build es diferente
+          npm run build  # Cambia si tu comando de build es diferente
 
       # Paso 4: Desplegar en GitHub Pages
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages  # Rama en la que se publicará la app
-          folder: dist/<nombre-del-proyecto>  # Carpeta generada por el build de Angular
+          folder: dist/web-cotiza  # Carpeta generada por el build de Angular
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token de GitHub para permitir el acceso
