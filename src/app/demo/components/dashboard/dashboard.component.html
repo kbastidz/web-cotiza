@@ -1,112 +1,141 @@
 <style>
-  .empresa-logo {
+  /* invoice.component.css */
+  
+
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .logo-placeholder {
     width: 150px;
-    margin-bottom: 15px;
+    height: 100px;
+
   }
 
-  .empresa-header {
-    display: flex;
-    align-items: flex-start;
+  .totals {
+    text-align: right;
+    margin-top: 20px;
   }
 
   .empresa-logo {
-    margin-right: 20px;
+    width: 170px;
+    margin-bottom: 15px;
+    border-radius: 1rem;
   }
 
-  .empresa-info {
-    display: flex;
-    flex-direction: column;
-  }
+  .hide-buttons {
+  display: none;
+}
 </style>
 
 <div class="col-12 md:col-12">
   <div class="card p-fluid">
-    <header class="empresa-header">
-      <img src="assets/logo.webp" alt="Logo de la Empresa" class="empresa-logo">
-      <div class="empresa-info">
-        <h2>Cotización de Proyecto</h2>
-        <p><strong>{{lblEmpresa}}</strong></p>
-        <p>{{lblTelefono}}</p>
-        <p>{{lblDireccion}}</p>
-        <p>Fecha de Cotización: {{fechaCotizacion}}</p>
+    <!-- invoice.component.html -->
+    <div class="invoice-container">
+      <div class="invoice-header">
+        <div class="logo-placeholder">
+          <img src="assets/logo.webp" alt="Logo de la Empresa" class="empresa-logo">
+        </div>
+        <div class="invoice-title">
+          <h1>INVOICE</h1>
+          <p>NO. INVOICE: {{randomNumber}}</p>
+          <p>INVOICE DATE: <p-calendar inputId="calendar" [(ngModel)]="value5"></p-calendar></p>
+        </div>
       </div>
-    </header>
-    <hr>
-    <div class="p-fluid p-formgrid grid">
-      <div class="field col-12 md:col-6">
-        <label htmlFor="firstname2">Cliente</label>
-        <input pInputText id="nombreCliente" [(ngModel)]="nombreCliente" name="nombreCliente" type="text" />
-      </div>
-      <div class="field col-12 md:col-6">
-        <label htmlFor="firstname2">Dirección</label>
-        <input pInputText id="direccionCliente" [(ngModel)]="direccionCliente" name="direccionCliente" type="text" />
-      </div>
+      <form [formGroup]="invoiceForm">
+        <div class="invoice-details col-12 md:col-12">
+          <div class="grid">
+            <div class="from-section col-12 md:col-6">
+              <h3>FROM</h3>
+              <input pInputText value="{{lblTrabajador}}" class="mb-3" />
+              <input pInputText value="{{lblDireccion}}" class="mb-3" />
+              <input pInputText value="{{lblTelefono}}" class="mb-3" />
+              <input pInputText value="{{lblCorreo}}" class="mb-3" />
+            </div>
 
-      <div class="field col-12 md:col-6">
-        <label for="tipoProyecto">Tipo de Proyecto</label>
-        <p-dropdown [options]="listTipoProyecto" optionLabel="name" [(ngModel)]="tipoProyecto"></p-dropdown>
-      </div>
+            <div class="bill-to-section col-12 md:col-6">
+              <h3>BILL TO</h3>
+              <input pInputText formControlName="nombreCliente" class="mb-3" placeholder="NAMES" />
+              <input pInputText formControlName="direccionCliente" class="mb-3" placeholder="ADDRESS" />
+              <input pInputText formControlName="telefonoCliente" class="mb-3" placeholder="PHONE" />
+              <input pInputText formControlName="correoCliente" class="mb-3" placeholder="E-MAIL" />
+            </div>
+          </div>
 
-      <div class="field col-12 md:col-6">
-        <label for="tipoConstruccion">Tipo de Construcción</label>
-        <p-dropdown [options]="listTipoConstruccion" optionLabel="name" [(ngModel)]="tipoConstruccion"></p-dropdown>
-      </div>
+        </div>
 
-      <div class="field col-12 md:col-12">
-        <label htmlFor="lastname2">Descripción del Proyecto</label>
-        <textarea id="descripcionProyecto" [(ngModel)]="descripcionProyecto" name="descripcionProyecto" rows="5"
-          cols="30" placeholder="Your Message" pInputTextarea></textarea>
-      </div>
-
-    </div>
-
-    <div class="cotizacion-container" id="cotizacion-container">
-      <form (ngSubmit)="calcularCotizacion()">
-        <!-- Información de la Empresa -->
-        <p-table #dt [value]="materiales" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['Material','PrecioUnitario','Cantidad','Total']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" selectionMode="multiple" [rowHover]="true" dataKey="id">
-          <ng-template pTemplate="caption">              
-                <h3>Total Cotización: ${{ totalCotizacion }}</h3>
-                <button pButton pRipple  icon="pi pi-plus" class="p-button-rounded p-button-primary p-button-outlined mr-2" (click)="agregarMaterial()"></button>
-                            
-                <!--<button [disabled]="!nombreCliente || !descripcionProyecto || !tipoProyecto || !tipoConstruccion || totalCotizacion === 0"
-                pButton pRipple type="submit" icon="pi pi-check" class="p-button-rounded p-button-outlined"></button>-->
-                <button (click)="generarPDF()" pButton pRipple type="button" icon="pi pi-file-pdf" class="p-button-rounded p-button-success p-button-outlined"></button>              
+       
+        <p-table [value]="items.controls" [tableStyle]="{'min-width': '50rem'}" responsiveLayout="scroll" formArrayName="items">
+          <ng-template pTemplate="caption">
+            <button *ngIf="!isGeneratingPDF" (click)="addItem()" pButton pRipple icon="pi pi-plus" class="p-button-rounded p-button-primary p-button-outlined mr-2"></button>
+            <button *ngIf="!isGeneratingPDF" (click)="generatePDF()" pButton pRipple type="button" icon="pi pi-file-pdf" class="p-button-rounded p-button-success p-button-outlined"></button> 
           </ng-template>
           <ng-template pTemplate="header">
-              <tr>           
-                  <th pSortableColumn="Material">Material <p-sortIcon field="Material"></p-sortIcon></th>
-                  <th pSortableColumn="Cantidad">Cantidad <p-sortIcon field="Cantidad"></p-sortIcon></th>
-                  <th pSortableColumn="PrecioUnitario">Precio Unitario <p-sortIcon field="PrecioUnitario"></p-sortIcon></th>
-                  <th pSortableColumn="Total">Total <p-sortIcon field="Total"></p-sortIcon></th>
-                  <th></th>
-              </tr>
+            <tr>
+              <th>PRODUCT/SERVICE</th>
+              <th>QTY</th>
+              <th>PRICE ($)</th>
+              <th>AMOUNT ($)</th>
+              <th *ngIf="!isGeneratingPDF">ACTIONS</th>
+            </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-material let-i="rowIndex">
-            <tr >
-              <td><input pInputText type="text" [(ngModel)]="material.nombre" name="nombre{{i}}" required></td>
+          <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+            <tr [formGroupName]="rowIndex">
               <td>
-                <input pInputText [(ngModel)]="material.cantidad" name="cantidad{{i}}" min="0" type="number" (ngModelChange)="calcularCotizacion()"/>
+                <textarea formControlName="product" rows="5" cols="30" placeholder="Enter product/service" pInputTextarea></textarea>
               </td>
               <td>
                 <p-inputNumber
-                  [(ngModel)]="material.precio"
-                  name="precio{{i}}"
+                  formControlName="quantity"
                   mode="decimal"
-                  (ngModelChange)="calcularCotizacion()"
+                  (ngModelChange)="calculateAmount(rowIndex)"
                   minFractionDigits="2"
                   maxFractionDigits="2"
                 ></p-inputNumber>
-              </td>              
-              <td>{{ material.total }}</td>
+              </td>
               <td>
-                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="eliminarMaterial(i)"></button>
+                <p-inputNumber
+                  formControlName="price"
+                  mode="decimal"
+                  (ngModelChange)="calculateAmount(rowIndex)"
+                  minFractionDigits="2"
+                  maxFractionDigits="2"
+                ></p-inputNumber>
+              </td>
+              <td>
+                {{ getAmount(rowIndex) | currency: 'USD' }}
+              </td>
+              <td *ngIf="!isGeneratingPDF">
+                <button
+                  
+                  pButton
+                  pRipple
+                  icon="pi pi-trash"
+                  class="p-button-rounded p-button-danger"
+                  (click)="removeItem(rowIndex)"
+                ></button>
               </td>
             </tr>
           </ng-template>
-        </p-table>    
-      </form>    
+        </p-table>
+          
+
+
+    
+        
+
+        <div class="totals">
+          <p>SUBTOTAL: {{ getSubtotal() | currency: 'USD' }}</p>
+          <p>TAX 8%: {{ getTax() | currency: 'USD' }}</p>
+          <p>TOTAL: {{ getTotal() | currency: 'USD' }}</p>
+        </div>
+      </form>
+
+
     </div>
+    
+
 
   </div>
 </div>
-
