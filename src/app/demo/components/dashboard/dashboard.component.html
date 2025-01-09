@@ -2,10 +2,10 @@
   /* invoice.component.css */
   
 
-  .invoice-header {
+  /*.invoice-header {
     display: flex;
     justify-content: space-between;
-  }
+  }*/
 
   .logo-placeholder {
     width: 150px;
@@ -33,15 +33,18 @@
   <div class="card p-fluid">
     <!-- invoice.component.html -->
     <div class="invoice-container">
-      <div class="invoice-header">
-        <div class="logo-placeholder">
-          <img src="assets/logo.webp" alt="Logo de la Empresa" class="empresa-logo">
+      <div class="invoice-header col-12 md:col-12">
+        <div class="grid">
+          <div class=" col-12 md:col-6">
+            <img src="assets/logo.webp" alt="Logo de la Empresa" class="empresa-logo">
+          </div>
+          <div class="invoice-title col-12 md:col-6">
+            <h1>INVOICE</h1>
+            <p>NO. INVOICE: {{randomNumber}}</p>
+            <p>INVOICE DATE: <p-calendar inputId="calendar" [(ngModel)]="value5"></p-calendar></p>
+          </div>
         </div>
-        <div class="invoice-title">
-          <h1>INVOICE</h1>
-          <p>NO. INVOICE: {{randomNumber}}</p>
-          <p>INVOICE DATE: <p-calendar inputId="calendar" [(ngModel)]="value5"></p-calendar></p>
-        </div>
+        
       </div>
       <form [formGroup]="invoiceForm">
         <div class="invoice-details col-12 md:col-12">
