@@ -125,49 +125,63 @@ export class DashboardComponent implements OnInit {
 }
 
   generatePDF() {
-    
-
     const doc = new jsPDF();
-    
-    const pageWidth = doc.internal.pageSize.width;
-
+    // Espaciado entre secciones
+    const spacing = 10; // Espaciado vertical entre líneas
     // Añadir logo en la parte izquierda
     const logoUrl = 'assets/logo.webp'; // Ruta a tu logo
     doc.addImage(logoUrl, 'WEBP', 20, 20, 40, 30);  // 10 (X), 20 (Y), 40 (ancho), 30 (alto)
-
-    // Añadir título de la factura a la derecha
-    const rightMargin = 20; // Margen derecho
-    const rightX = pageWidth - rightMargin; // Posición X para el texto a la derecha
-
-    doc.setFontSize(18);
-    doc.text('INVOICE', rightX, 30, { align: 'right' });
+    doc.setFontSize(25);
+   
+    //doc.text('INVOICE', rightX, 60, { align: 'right' });
+    doc.text('INVOICE:', 120, 30);
 
     // Número de factura y fecha alineados a la derecha
     doc.setFontSize(12);
-    doc.text(`NO. INVOICE: ${this.randomNumber}`, rightX, 40, { align: 'right' });
-    doc.text(`INVOICE DATE: ${this.formatDate(this.value5)}`, rightX, 50, { align: 'right' });
+    doc.text(`NO. INVOICE: ${this.randomNumber}`, 120, 40,);
+    doc.text(`INVOICE DATE: ${this.formatDate(this.value5)}`, 120, 50);
 
     // Datos de la empresa
-    doc.text('FROM:', 20, 60);
-    doc.text(`${this.lblTrabajador}`, 20, 70);
-    doc.text(`${this.lblDireccion}`, 20, 80);
-    doc.text(`${this.lblTelefono}`, 20, 90);
+    doc.text('FROM:', 20, 65);
+    doc.text(`${this.lblTrabajador}`, 20, 72);
+    doc.text(`${this.lblDireccion}`, 20, 82);
+    doc.text(`${this.lblTelefono}`, 20, 92);
     doc.text(`${this.lblCorreo}`, 20, 100);
 
     // Sección de facturación (BILL TO)
-    doc.text('BILL TO:', 120, 60);
-    doc.text(this.invoiceForm.value.nombreCliente, 120, 70); // Valor del campo nombreCliente
-    doc.text(this.invoiceForm.value.direccionCliente, 120, 80); // Valor del campo direccionCliente
-    doc.text(this.invoiceForm.value.telefonoCliente, 120, 90); // Valor del campo telefonoCliente
+    doc.text('BILL TO:', 120, 65);
+    doc.text(this.invoiceForm.value.nombreCliente, 120, 72); // Valor del campo nombreCliente
+    doc.text(this.invoiceForm.value.direccionCliente, 120, 82); // Valor del campo direccionCliente
+    doc.text(this.invoiceForm.value.telefonoCliente, 120, 92); // Valor del campo telefonoCliente
     doc.text(this.invoiceForm.value.correoCliente, 120, 100);
 
     // Recorremos los productos desde el FormArray
     const startY = 120;
-    doc.text('PRODUCT/SERVICE', 20, startY);
-    doc.text('QTY', 100, startY);
-    doc.text('PRICE ($)', 130, startY);
-    doc.text('AMOUNT ($)', 160, startY);
 
+    // Estilo para el encabezado
+    doc.setFillColor(200, 200, 255); // Fondo azul claro
+    doc.rect(20, startY - 10, 170, 10, 'F'); // Dibujar un rectángulo relleno
+
+    // Cambiar el color del texto a azul oscuro
+    doc.setTextColor(0, 0, 102);
+    doc.setFontSize(12);
+
+    // Añadir encabezados
+    doc.text('PRODUCT/SERVICE', 22, startY - 2); // Margen interno de 2 px
+    doc.text('QTY', 102, startY - 2);
+    doc.text('PRICE ($)', 132, startY - 2);
+    doc.text('AMOUNT ($)', 162, startY - 2);
+
+    // Dibujar bordes de la tabla
+    doc.setDrawColor(0); // Color de los bordes (negro)
+    doc.setLineWidth(0.5);
+    doc.rect(20, startY - 10, 170, 10); // Borde del encabezado
+    doc.line(100, startY - 10, 100, startY); // Línea vertical para separar 'PRODUCT/SERVICE' y 'QTY'
+    doc.line(130, startY - 10, 130, startY); // Línea vertical para separar 'QTY' y 'PRICE ($)'
+    doc.line(160, startY - 10, 160, startY); // Línea vertical para separar 'PRICE ($)' y 'AMOUNT ($)'
+
+    // Volver al color negro para el resto del contenido
+    doc.setTextColor(0, 0, 0);
     let currentY = startY + 10;
 
     // Recorremos los items del FormArray
@@ -186,9 +200,13 @@ export class DashboardComponent implements OnInit {
     });
 
     // Totales
-    doc.text(`SUBTOTAL: ${this.getSubtotal().toFixed(2)}`, 155, currentY + 10);
-    doc.text(`TAX 8%: ${this.getTax().toFixed(2)}`, 155, currentY + 20);
-    doc.text(`TOTAL: ${this.getTotal().toFixed(2)}`, 155, currentY + 30);
+    doc.text(`SUBTOTAL:`, 130, currentY + 10);
+    doc.text(`TAX 8%:`, 130, currentY + 20);
+    doc.text(`TOTAL:`, 130, currentY + 30);
+
+    doc.text(`${this.getSubtotal().toFixed(2)}`, 160, currentY + 10);
+    doc.text(`${this.getTax().toFixed(2)}`, 160, currentY + 20);
+    doc.text(`${this.getTotal().toFixed(2)}`, 160, currentY + 30);
 
     // Generar y guardar el PDF
     doc.save('invoice.pdf');
