@@ -1233,6 +1233,11 @@
     appearance: none;
     border-radius: 6px;
   }
+  .p-inputtext.centerz {
+    
+    justify-content: center !important;
+  }
+
   .p-inputtext:enabled:hover {
     border-color: #6366F1;
   }
