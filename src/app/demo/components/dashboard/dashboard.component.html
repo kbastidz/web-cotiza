@@ -128,12 +128,16 @@
                 <td>{{ getSubtotal() | currency: 'USD' }}</td>
               </tr>
               <tr>
-                <td colspan="3"></td>
-                <td>TAX 8%
+                <td colspan="2"></td>
+                <td class="text-center">
                   <p-checkbox [checked]="isTaxEnabled" 
                   (onChange)="updateTax()" 
                   value="isTaxEnabled"
                   label="Aplicar Impuesto" />
+                </td>
+                <td>
+                  
+                  TAX 8%
                 </td>
                 <td>
                   {{ getTax() | currency: 'USD' }}</td>
