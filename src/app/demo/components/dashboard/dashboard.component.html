@@ -95,12 +95,11 @@
               <td class="text-center">
                 <p-inputNumber
                   formControlName="price"
-                  mode="decimal"
+                  [mode]="'decimal'"
                   (ngModelChange)="calculateAmount(rowIndex)"
-                  minFractionDigits="2"
-                  maxFractionDigits="2"
+                  [minFractionDigits]="2"
+                  [maxFractionDigits]="2"
                   [locale]="'en-US'"
-                  class="centerz"
                 ></p-inputNumber>
               </td>
               <td class="text-center">

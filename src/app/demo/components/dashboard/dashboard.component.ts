@@ -79,12 +79,14 @@ export class DashboardComponent implements OnInit {
   addItem(): void {
     const itemGroup = this.fb.group({
       product: [''],
-      quantity: [0],
-      price: [0],
+      quantity: [null],
+      price: [null],
       amount: [0]
     });
     this.items.push(itemGroup);
   }
+
+  
 
   removeItem(index: number): void {
     this.items.removeAt(index);
@@ -135,13 +137,15 @@ export class DashboardComponent implements OnInit {
 
 generatePDF() { 
   const doc = new jsPDF();
+
   // Espaciado entre secciones
-  const spacing = 10; // Espaciado vertical entre líneas
+  const spacing = 10;
+
   // Añadir logo en la parte izquierda
   const logoUrl = 'assets/logo.webp'; // Ruta a tu logo
-  doc.addImage(logoUrl, 'WEBP', 20, 20, 40, 30);  // 10 (X), 20 (Y), 40 (ancho), 30 (alto)
-  doc.setFontSize(25);
+  doc.addImage(logoUrl, 'WEBP', 20, 20, 40, 30); 
 
+  doc.setFontSize(25);
   doc.text('INVOICE:', 120, 30);
 
   // Número de factura y fecha alineados a la derecha
@@ -163,37 +167,30 @@ generatePDF() {
   doc.text(this.invoiceForm.value.telefonoCliente, 120, 92);
   doc.text(this.invoiceForm.value.correoCliente, 120, 100);
 
-  // Recorremos los productos desde el FormArray
+  // Configuración de la tabla de productos
   const startY = 120;
-
-  // Estilo para el encabezado
-  doc.setFillColor(200, 200, 255); // Fondo azul claro
-  doc.rect(20, startY - 10, 170, 10, 'F'); // Dibujar un rectángulo relleno
-
-  // Cambiar el color del texto a azul oscuro
+  doc.setFillColor(200, 200, 255);
+  doc.rect(20, startY - 10, 170, 10, 'F');
   doc.setTextColor(0, 0, 102);
   doc.setFontSize(12);
-
-  // Añadir encabezados
   doc.text('PRODUCT/SERVICE', 22, startY - 2);
-  doc.text('QTY', 102, startY - 2);
-  doc.text('PRICE ($)', 132, startY - 2);
-  doc.text('AMOUNT ($)', 162, startY - 2);
+  doc.text('QTY', 115, startY - 2, { align: 'center' });
+  doc.text('PRICE ($)', 145, startY - 2, { align: 'center' });
+  doc.text('AMOUNT ($)', 175, startY - 2, { align: 'center' });
 
   // Dibujar bordes de la tabla
-  doc.setDrawColor(0); // Color de los bordes (negro)
+  doc.setDrawColor(0);
   doc.setLineWidth(0.5);
-  doc.rect(20, startY - 10, 170, 10); // Borde del encabezado
-  doc.line(100, startY - 10, 100, startY); // Línea vertical para separar 'PRODUCT/SERVICE' y 'QTY'
-  doc.line(130, startY - 10, 130, startY); // Línea vertical para separar 'QTY' y 'PRICE ($)'
-  doc.line(160, startY - 10, 160, startY); // Línea vertical para separar 'PRICE ($)' y 'AMOUNT ($)'
+  doc.rect(20, startY - 10, 170, 10);
+  doc.line(100, startY - 10, 100, startY);
+  doc.line(130, startY - 10, 130, startY);
+  doc.line(160, startY - 10, 160, startY);
 
-  // Volver al color negro para el resto del contenido
+  // Renderizar productos
   doc.setTextColor(0, 0, 0);
   let currentY = startY + 10;
-
-  // Recorremos los items del FormArray
   const items = (this.invoiceForm.get('items') as FormArray).controls;
+
   items.forEach((item, index) => {
     const product = item.get('product')?.value || '';
     const quantity = item.get('quantity')?.value || 0;
@@ -202,55 +199,71 @@ generatePDF() {
     const formattedPrice = new Intl.NumberFormat('en-US').format(price);
     const formattedAmount = new Intl.NumberFormat('en-US').format(amount);
 
-    const quantityX = 100 + (130 - 100 - doc.getTextWidth(quantity.toString())) / 2; // Centrar cantidad
-    const priceX = 130 + (160 - 130 - doc.getTextWidth(formattedPrice)) / 2; // Centrar precio
-    const amountX = 160 + (180 - 150 - doc.getTextWidth(formattedAmount)) / 2; // Centrar monto
+    // Dividir líneas largas de texto para el campo `product`
+    const splitText = doc.splitTextToSize(product, 75); // Ajusta el ancho según sea necesario
 
-    doc.text(" " + product, 20, currentY);
-    doc.text(quantity.toString(), quantityX, currentY);
-    doc.text(formattedPrice, priceX, currentY);
-    doc.text(formattedAmount, amountX, currentY);
+    splitText.forEach((line, i) => {
+      const yPosition = currentY + i * 6;
+      if (i === 0) {
+        doc.text(line, 22, yPosition);
+        doc.text(quantity.toString(), 115, yPosition, { align: 'center' });
+        doc.text(formattedPrice, 145, yPosition, { align: 'center' });
+        doc.text(formattedAmount, 175, yPosition, { align: 'center' });
+      } else {
+        doc.text(line, 22, yPosition); // Solo agrega el texto en las líneas adicionales
+      }
+    });
 
-    doc.line(20, currentY - 10, 20, currentY + 4);
-    doc.line(190, currentY - 10, 190, currentY + 4);
-    // Línea horizontal entre filas
-    doc.line(20, currentY + 4, 190, currentY + 4);
+    // Dibujar bordes de la fila
+    const rowHeight = splitText.length * 6;
+    doc.rect(20, currentY - 6, 170, rowHeight);
+    doc.line(100, currentY - 6, 100, currentY + rowHeight - 6);
+    doc.line(130, currentY - 6, 130, currentY + rowHeight - 6);
+    doc.line(160, currentY - 6, 160, currentY + rowHeight - 6);
 
-    currentY += 10;
+    currentY += rowHeight + 4; // Espaciado dinámico entre filas
   });
 
   // Totales
-  const totalsStartY = currentY ; //+ 10;
+  let totalsStartY = currentY - 10;
 
-  // Alineación para los totales
-  const subtotalX = 168; // Alineación para SUBTOTAL
-  const taxX = 168;      // Alineación para TAX
-  const totalX = 168;    // Alineación para TOTAL
+  // Altura de la página y margen inferior
+const pageHeight = doc.internal.pageSize.height;
+const bottomMargin = 20; // Espacio mínimo al final de la página
 
-  // Añadir bordes para los totales (todo el bloque)
-  doc.rect(130, totalsStartY, 60, 30); // Borde para "SUBTOTAL", "TAX", "TOTAL"
-  
-  // Añadir bordes para los totales
-doc.rect(130, totalsStartY, 60, 10); // Borde para "SUBTOTAL"
-doc.rect(130, totalsStartY + 10, 60, 10); // Borde para "TAX"
-doc.rect(130, totalsStartY + 20, 60, 10); // Borde para "TOTAL"
+// Verifica si hay suficiente espacio para el bloque de totales
+if (totalsStartY + 30 > pageHeight - bottomMargin) {
+  doc.addPage(); // Crear una nueva página
+  totalsStartY = 20; // Reiniciar la posición Y en la nueva página
+}
 
-// Añadir los textos de los totales
+// Alineación para los totales
+const subtotalX = 168; // Alineación para SUBTOTAL
+const taxX = 168;      // Alineación para TAX
+const totalX = 168;    // Alineación para TOTAL
+
+// Añadir bordes para los totales
+doc.rect(130, totalsStartY, 60, 30); // Marco general
+doc.rect(130, totalsStartY, 60, 10); // Borde SUBTOTAL
+doc.rect(130, totalsStartY + 10, 60, 10); // Borde TAX
+doc.rect(130, totalsStartY + 20, 60, 10); // Borde TOTAL
+
+// Añadir textos de los totales
 doc.text(` SUBTOTAL:`, 130, totalsStartY + 7);
 doc.text(` TAX 8%:`, 130, totalsStartY + 17);
 doc.text(` TOTAL:`, 130, totalsStartY + 27);
 
-// Dibujar la línea vertical divisoria entre "SUBTOTAL:" y su valor
-doc.line(160, totalsStartY, 160, totalsStartY + 30); // Línea vertical | que cubre todas las celdas de totales
+// Línea vertical divisoria
+doc.line(160, totalsStartY, 160, totalsStartY + 30);
 
-// Añadir los valores de los totales
+// Añadir valores de los totales
 doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getSubtotal())}`, subtotalX, totalsStartY + 7);
 doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTax())}`, taxX, totalsStartY + 17);
 doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTotal())}`, totalX, totalsStartY + 27);
 
-  // Generar y guardar el PDF
   doc.save('invoice.pdf');
 }
+
 
 
 
