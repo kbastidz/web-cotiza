@@ -1,11 +1,4 @@
 <style>
-  /* invoice.component.css */
-  
-
-  /*.invoice-header {
-    display: flex;
-    justify-content: space-between;
-  }*/
 
   .logo-placeholder {
     width: 150px;
@@ -77,9 +70,9 @@
           <ng-template pTemplate="header">
             <tr>
               <th>PRODUCT/SERVICE</th>
-              <th>QTY</th>
-              <th>PRICE ($)</th>
-              <th>AMOUNT ($)</th>
+              <th class="text-center">QTY</th>
+              <th class="text-center">PRICE ($)</th>
+              <th class="text-center">AMOUNT ($)</th>
               <th *ngIf="!isGeneratingPDF">ACTIONS</th>
             </tr>
           </ng-template>
@@ -88,30 +81,36 @@
               <td>
                 <textarea formControlName="product" rows="5" cols="30" placeholder="Enter product/service" pInputTextarea></textarea>
               </td>
-              <td>
+              <td class="text-center">
                 <p-inputNumber
                   formControlName="quantity"
                   mode="decimal"
                   (ngModelChange)="calculateAmount(rowIndex)"
                   minFractionDigits="2"
                   maxFractionDigits="2"
+                  class="center"
+                  
                 ></p-inputNumber>
               </td>
-              <td>
+              <td class="text-center">
                 <p-inputNumber
                   formControlName="price"
                   mode="decimal"
                   (ngModelChange)="calculateAmount(rowIndex)"
                   minFractionDigits="2"
                   maxFractionDigits="2"
+                  [locale]="'en-US'"
+                  class="centerz"
                 ></p-inputNumber>
               </td>
-              <td>
-                {{ getAmount(rowIndex) | currency: 'USD' }}
+              <td class="text-center">
+                <label class="">
+                  {{ getAmount(rowIndex) | currency: 'USD' }}
+                </label>
+                
               </td>
               <td *ngIf="!isGeneratingPDF">
-                <button
-                  
+                <button                  
                   pButton
                   pRipple
                   icon="pi pi-trash"
@@ -121,24 +120,35 @@
               </td>
             </tr>
           </ng-template>
+          <ng-template pTemplate="footer">
+            
+              <tr>
+                <td colspan="3"></td>
+                <td>SUBTOTAL</td>
+                <td>{{ getSubtotal() | currency: 'USD' }}</td>
+              </tr>
+              <tr>
+                <td colspan="3"></td>
+                <td>TAX 8%
+                  <p-checkbox [checked]="isTaxEnabled" 
+                  (onChange)="updateTax()" 
+                  value="isTaxEnabled"
+                  label="Aplicar Impuesto" />
+                </td>
+                <td>
+                  {{ getTax() | currency: 'USD' }}</td>
+              </tr>
+              <tr>
+                <td colspan="3"></td>
+                <td>TOTAL</td>
+                <td>{{ getTotal() | currency: 'USD' }}</td>
+              </tr>            
+          </ng-template>
         </p-table>
           
-
-
-    
-        
-
-        <div class="totals">
-          <p>SUBTOTAL: {{ getSubtotal() | currency: 'USD' }}</p>
-          <p>TAX 8%: {{ getTax() | currency: 'USD' }}</p>
-          <p>TOTAL: {{ getTotal() | currency: 'USD' }}</p>
-        </div>
       </form>
-
 
     </div>
     
-
-
   </div>
 </div>

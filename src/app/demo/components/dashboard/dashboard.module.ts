@@ -15,6 +15,7 @@ import { DropdownModule } from "primeng/dropdown";
 import { InputNumberModule } from "primeng/inputnumber";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule } from "primeng/calendar";
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
     imports: [
@@ -34,7 +35,8 @@ import { CalendarModule } from "primeng/calendar";
         TableModule,
         InputNumberModule,
         ReactiveFormsModule ,
-        CalendarModule
+        CalendarModule,
+        CheckboxModule 
     ],
     declarations: [DashboardComponent]
 })
