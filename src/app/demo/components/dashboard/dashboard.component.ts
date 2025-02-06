@@ -16,6 +16,9 @@ export class DashboardComponent implements OnInit {
     lblCorreo: string = 'wilsonsolorzano864@gmail.com';
     lblDireccion: string = 'CHARLOTTE, NORTH CAROLINE, EE. UU.';
     lblTrabajador: string = 'WILSON SOLORZANO RODRIGUEZ';
+    txtLenyenda1: string = 'IF YOU HAVE ANY QUESTIONS CONCERNING THIS INVOICE';
+    txtLenyenda2: string = 'CONTACT US. wilsonsilirzano864@gmail.com OR +1 (704) 235-7771';
+    txtLenyenda3: string = 'THANKS YOU FOR TOUR BUSINESS!';
 
     randomNumber: number = 0;
  
@@ -135,33 +138,48 @@ export class DashboardComponent implements OnInit {
     return `${day}/${month}/${year}`;
 }
 
+formatDateNumber(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Meses empiezan desde 0
+  const year = date.getFullYear();
+  return `${day}${month}${year}`;
+}
+
 generatePDF() { 
   const doc = new jsPDF();
 
   // Espaciado entre secciones
   const spacing = 10;
-
+  //#155698
   // Añadir logo en la parte izquierda
-  const logoUrl = 'assets/logo.webp'; // Ruta a tu logo
-  doc.addImage(logoUrl, 'WEBP', 20, 20, 40, 30); 
+  const logoUrl = 'assets/logo.jpeg'; // Ruta a tu logo
+  doc.addImage(logoUrl, 'JPEG', 20, 20, 80, 40); 
 
   doc.setFontSize(25);
-  doc.text('INVOICE:', 120, 30);
+  doc.setTextColor(21, 86, 152);
+  doc.text('INVOICE', 120, 30);
+  doc.setTextColor(0, 0, 0);
 
   // Número de factura y fecha alineados a la derecha
+  const code = this.formatDateNumber(this.value5) + '-00' + this.randomNumber;
+  console.log(code);
   doc.setFontSize(12);
-  doc.text(`NO. INVOICE: ${this.randomNumber}`, 120, 40);
+  doc.text(`NO. INVOICE: ${code}`, 120, 40);
   doc.text(`INVOICE DATE: ${this.formatDate(this.value5)}`, 120, 50);
 
   // Datos de la empresa
+  doc.setTextColor(21, 86, 152);
   doc.text('FROM:', 20, 65);
+  doc.setTextColor(0, 0, 0);
   doc.text(`${this.lblTrabajador}`, 20, 72);
   doc.text(`${this.lblDireccion}`, 20, 82);
   doc.text(`${this.lblTelefono}`, 20, 92);
   doc.text(`${this.lblCorreo}`, 20, 100);
 
   // Sección de facturación (BILL TO)
+  doc.setTextColor(21, 86, 152);
   doc.text('BILL TO:', 120, 65);
+  doc.setTextColor(0, 0, 0);
   doc.text(this.invoiceForm.value.nombreCliente, 120, 72);
   doc.text(this.invoiceForm.value.direccionCliente, 120, 82);
   doc.text(this.invoiceForm.value.telefonoCliente, 120, 92);
@@ -169,9 +187,9 @@ generatePDF() {
 
   // Configuración de la tabla de productos
   const startY = 120;
-  doc.setFillColor(200, 200, 255);
+  doc.setFillColor(21, 86, 152);
   doc.rect(20, startY - 10, 170, 10, 'F');
-  doc.setTextColor(0, 0, 102);
+  doc.setTextColor(255,255,255);
   doc.setFontSize(12);
   doc.text('PRODUCT/SERVICE', 22, startY - 2);
   doc.text('QTY', 115, startY - 2, { align: 'center' });
@@ -215,7 +233,7 @@ generatePDF() {
     });
 
     // Dibujar bordes de la fila
-    const rowHeight = splitText.length * 6;
+    const rowHeight = splitText.length * 6 + 3;
     doc.rect(20, currentY - 6, 170, rowHeight);
     doc.line(100, currentY - 6, 100, currentY + rowHeight - 6);
     doc.line(130, currentY - 6, 130, currentY + rowHeight - 6);
@@ -230,6 +248,7 @@ generatePDF() {
   // Altura de la página y margen inferior
 const pageHeight = doc.internal.pageSize.height;
 const bottomMargin = 20; // Espacio mínimo al final de la página
+const footerY = pageHeight - 40; // Posición de las líneas
 
 // Verifica si hay suficiente espacio para el bloque de totales
 if (totalsStartY + 30 > pageHeight - bottomMargin) {
@@ -260,6 +279,18 @@ doc.line(160, totalsStartY, 160, totalsStartY + 30);
 doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getSubtotal())}`, subtotalX, totalsStartY + 7);
 doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTax())}`, taxX, totalsStartY + 17);
 doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTotal())}`, totalX, totalsStartY + 27);
+
+// Línea para la firma del cliente
+doc.line(30, footerY, 90, footerY); // Coordenadas (x1, y1, x2, y2)
+doc.text('COMPANY SIGNATURE', 40, footerY + 8);
+
+// Línea para la firma del proveedor
+doc.line(120, footerY, 180, footerY);
+doc.text('CLIENT SIGNATURE', 130, footerY + 8);
+
+doc.text(this.txtLenyenda1, 115, footerY + 18, { align: 'center' })
+doc.text(this.txtLenyenda2, 115, footerY + 24, { align: 'center' });
+doc.text(this.txtLenyenda3, 115, footerY + 30, { align: 'center' });
 
   doc.save('invoice.pdf');
 }
