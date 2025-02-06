@@ -16,8 +16,8 @@ export class DashboardComponent implements OnInit {
     lblCorreo: string = 'wilsonsolorzano864@gmail.com';
     lblDireccion: string = 'CHARLOTTE, NORTH CAROLINE, EE. UU.';
     lblTrabajador: string = 'WILSON SOLORZANO RODRIGUEZ';
-    txtLenyenda1: string = 'IF YOU HAVE ANY QUESTIONS CONCERNING THIS INVOICE';
-    txtLenyenda2: string = 'CONTACT US. wilsonsilirzano864@gmail.com OR +1 (704) 235-7771';
+    txtLenyenda1: string = 'IF YOU HAVE ANY QUESTIONS CONCERNING THIS INVOICE CONTACT US.';
+    txtLenyenda2: string = 'wilsonsilirzano864@gmail.com OR +1 (704) 235-7771';
     txtLenyenda3: string = 'THANKS YOU FOR TOUR BUSINESS!';
 
     randomNumber: number = 0;
@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
     checkboxValue: any[] = [];
 
     descripcionProyecto: string = '';
+    code: string = '';
     
     tipoProyecto: any;
     tipoConstruccion: any;
@@ -39,10 +40,12 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {
       this.generateRandom8Digits();
+      this.code = this.formatDateNumber() + '-001' + this.randomNumber;
+      this.value5 = new Date();
     }
 
     generateRandom8Digits(): void {
-      this.randomNumber =  Math.floor(10000000 + Math.random() * 90000000);
+      this.randomNumber =  Math.floor(100 + Math.random() * 900);
     }
 
     isGeneratingPDF = false;
@@ -138,7 +141,8 @@ export class DashboardComponent implements OnInit {
     return `${day}/${month}/${year}`;
 }
 
-formatDateNumber(date: Date): string {
+formatDateNumber(): string {
+  const date = new Date();
   const day = date.getDate().toString().padStart(2, '0');
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Meses empiezan desde 0
   const year = date.getFullYear();
@@ -153,48 +157,55 @@ generatePDF() {
   //#155698
   // Añadir logo en la parte izquierda
   const logoUrl = 'assets/logo.jpeg'; // Ruta a tu logo
-  doc.addImage(logoUrl, 'JPEG', 20, 20, 80, 40); 
+  doc.addImage(logoUrl, 'JPEG', 20, 20, 80, 45); 
 
   doc.setFontSize(25);
   doc.setTextColor(21, 86, 152);
+  doc.setFont(undefined,'bold'); // Establece el estilo de fuente a negrita
   doc.text('INVOICE', 120, 30);
+  doc.setFont(undefined,'normal');
   doc.setTextColor(0, 0, 0);
 
   // Número de factura y fecha alineados a la derecha
-  const code = this.formatDateNumber(this.value5) + '-00' + this.randomNumber;
-  console.log(code);
+  
   doc.setFontSize(12);
-  doc.text(`NO. INVOICE: ${code}`, 120, 40);
+  doc.text(`NO. INVOICE: ${this.code}`, 120, 40);
   doc.text(`INVOICE DATE: ${this.formatDate(this.value5)}`, 120, 50);
 
   // Datos de la empresa
   doc.setTextColor(21, 86, 152);
-  doc.text('FROM:', 20, 65);
+  doc.setFont(undefined,'bold');
+  doc.text('FROM:', 20, 73);
+  doc.setFont(undefined,'normal');
   doc.setTextColor(0, 0, 0);
-  doc.text(`${this.lblTrabajador}`, 20, 72);
-  doc.text(`${this.lblDireccion}`, 20, 82);
-  doc.text(`${this.lblTelefono}`, 20, 92);
-  doc.text(`${this.lblCorreo}`, 20, 100);
+  doc.text(`${this.lblTrabajador}`, 20, 80);
+  doc.text(`${this.lblDireccion}`, 20, 90);
+  doc.text(`${this.lblTelefono}`, 20, 100);
+  doc.text(`${this.lblCorreo}`, 20, 110);
 
   // Sección de facturación (BILL TO)
   doc.setTextColor(21, 86, 152);
-  doc.text('BILL TO:', 120, 65);
+  doc.setFont(undefined,'bold');
+  doc.text('BILL TO:', 120, 73);
+  doc.setFont(undefined,'normal');
   doc.setTextColor(0, 0, 0);
-  doc.text(this.invoiceForm.value.nombreCliente, 120, 72);
-  doc.text(this.invoiceForm.value.direccionCliente, 120, 82);
-  doc.text(this.invoiceForm.value.telefonoCliente, 120, 92);
-  doc.text(this.invoiceForm.value.correoCliente, 120, 100);
+  doc.text(this.invoiceForm.value.nombreCliente, 120, 80);
+  doc.text(this.invoiceForm.value.direccionCliente, 120, 90);
+  doc.text(this.invoiceForm.value.telefonoCliente, 120, 100);
+  doc.text(this.invoiceForm.value.correoCliente, 120, 110);
 
   // Configuración de la tabla de productos
-  const startY = 120;
+  const startY = 130;
   doc.setFillColor(21, 86, 152);
   doc.rect(20, startY - 10, 170, 10, 'F');
   doc.setTextColor(255,255,255);
   doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
   doc.text('PRODUCT/SERVICE', 22, startY - 2);
   doc.text('QTY', 115, startY - 2, { align: 'center' });
   doc.text('PRICE ($)', 145, startY - 2, { align: 'center' });
   doc.text('AMOUNT ($)', 175, startY - 2, { align: 'center' });
+  doc.setFont(undefined,'normal');
 
   // Dibujar bordes de la tabla
   doc.setDrawColor(0);
@@ -248,7 +259,7 @@ generatePDF() {
   // Altura de la página y margen inferior
 const pageHeight = doc.internal.pageSize.height;
 const bottomMargin = 20; // Espacio mínimo al final de la página
-const footerY = pageHeight - 40; // Posición de las líneas
+const footerY = pageHeight - 60; // Posición de las líneas
 
 // Verifica si hay suficiente espacio para el bloque de totales
 if (totalsStartY + 30 > pageHeight - bottomMargin) {
@@ -282,15 +293,21 @@ doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTotal())}`, totalX, 
 
 // Línea para la firma del cliente
 doc.line(30, footerY, 90, footerY); // Coordenadas (x1, y1, x2, y2)
+doc.setFont(undefined, 'bold');
 doc.text('COMPANY SIGNATURE', 40, footerY + 8);
 
 // Línea para la firma del proveedor
 doc.line(120, footerY, 180, footerY);
 doc.text('CLIENT SIGNATURE', 130, footerY + 8);
+doc.setFont(undefined, 'normal');
 
-doc.text(this.txtLenyenda1, 115, footerY + 18, { align: 'center' })
-doc.text(this.txtLenyenda2, 115, footerY + 24, { align: 'center' });
-doc.text(this.txtLenyenda3, 115, footerY + 30, { align: 'center' });
+doc.text(this.txtLenyenda1, 110, footerY + 30, { align: 'center' });
+doc.setTextColor(21, 86, 152);
+doc.text(this.txtLenyenda2, 115, footerY + 37, { align: 'center' });
+doc.setTextColor(0,0,0);
+doc.setFontSize(20);
+doc.setFont(undefined, 'bold');
+doc.text(this.txtLenyenda3, 115, footerY + 50, { align: 'center' });
 
   doc.save('invoice.pdf');
 }
