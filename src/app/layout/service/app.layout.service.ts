@@ -60,6 +60,7 @@ export class LayoutService {
             this.changeScale(config.scale);
             this.onConfigUpdate();
         });
+        this.onMenuToggle();
     }
 
     updateStyle(config: AppConfig) {

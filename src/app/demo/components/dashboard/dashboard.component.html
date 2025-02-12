@@ -20,6 +20,9 @@
   .hide-buttons {
   display: none;
 }
+.d-none{
+  display: none;
+}
 </style>
 
 <div class="col-12 md:col-12">
@@ -127,18 +130,17 @@
                 <td>{{ getSubtotal() | currency: 'USD' }}</td>
               </tr>
               <tr>
-                <td colspan="2"></td>
-                <td class="text-center">
+                <td colspan="2" class="d-none"></td>
+                <td class="text-center d-none">
                   <p-checkbox [checked]="isTaxEnabled" 
                   (onChange)="updateTax()" 
                   value="isTaxEnabled"
                   label="Aplicar Impuesto" />
                 </td>
-                <td>
-                  
+                <td class="d-none">                  
                   TAX 8%
                 </td>
-                <td>
+                <td class="d-none">
                   {{ getTax() | currency: 'USD' }}</td>
               </tr>
               <tr>

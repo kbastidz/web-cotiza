@@ -273,23 +273,23 @@ const taxX = 168;      // Alineación para TAX
 const totalX = 168;    // Alineación para TOTAL
 
 // Añadir bordes para los totales
-doc.rect(130, totalsStartY, 60, 30); // Marco general
+//doc.rect(130, totalsStartY, 60, 30); // Marco general
 doc.rect(130, totalsStartY, 60, 10); // Borde SUBTOTAL
 doc.rect(130, totalsStartY + 10, 60, 10); // Borde TAX
-doc.rect(130, totalsStartY + 20, 60, 10); // Borde TOTAL
+//doc.rect(130, totalsStartY + 20, 60, 10); // Borde TOTAL
 
 // Añadir textos de los totales
 doc.text(` SUBTOTAL:`, 130, totalsStartY + 7);
-doc.text(` TAX 8%:`, 130, totalsStartY + 17);
-doc.text(` TOTAL:`, 130, totalsStartY + 27);
+//doc.text(` TAX 8%:`, 130, totalsStartY + 17);
+doc.text(` TOTAL:`, 130, totalsStartY + 17); //27
 
 // Línea vertical divisoria
-doc.line(160, totalsStartY, 160, totalsStartY + 30);
+doc.line(160, totalsStartY, 160, totalsStartY + 20); //30
 
 // Añadir valores de los totales
-doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getSubtotal())}`, subtotalX, totalsStartY + 7);
-doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTax())}`, taxX, totalsStartY + 17);
-doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTotal())}`, totalX, totalsStartY + 27);
+doc.text(`$  ${new Intl.NumberFormat('en-US').format(this.getSubtotal())}`, subtotalX, totalsStartY + 7);
+//doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTax())}`, taxX, totalsStartY + 17);
+doc.text(`$  ${new Intl.NumberFormat('en-US').format(this.getTotal())}`, totalX, totalsStartY + 17);//27
 
 // Línea para la firma del cliente
 doc.line(30, footerY, 90, footerY); // Coordenadas (x1, y1, x2, y2)
@@ -309,8 +309,10 @@ doc.setFontSize(20);
 doc.setFont(undefined, 'bold');
 doc.text(this.txtLenyenda3, 115, footerY + 50, { align: 'center' });
 
-  doc.save('invoice.pdf');
+  doc.save(this.code +'.pdf');
 }
+
+
 
 
 
