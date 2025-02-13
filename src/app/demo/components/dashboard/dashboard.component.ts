@@ -29,6 +29,7 @@ export class DashboardComponent implements OnInit {
     code: string = '';
     
     tipoProyecto: any;
+    codigo: string = '';
     tipoConstruccion: any;
     presupuestoEstimado: number | null = null;
     fechaCotizacion: string = new Date().toLocaleDateString();
@@ -46,6 +47,13 @@ export class DashboardComponent implements OnInit {
 
     generateRandom8Digits(): void {
       this.randomNumber =  Math.floor(10 + Math.random() * 90);
+    }
+
+    onInputChange(event: any) {
+      const input = event.target as HTMLInputElement;
+      const value = input.value;
+      const newValue = value.replace(/[^0-9-]/g, ''); // Elimina caracteres no numéricos ni "-"
+      this.codigo = newValue; // Actualiza la variable
     }
 
     isGeneratingPDF = false;
@@ -170,7 +178,7 @@ generatePDF() {
   // Número de factura y fecha alineados a la derecha
   
   doc.setFontSize(12);
-  doc.text(`N°. INVOICE: ${this.code}`, 120, 40);
+  doc.text(`N°. INVOICE: ${this.codigo}`, 120, 40);
   doc.text(`INVOICE DATE: ${this.formatDate(this.value5)}`, 120, 50);
 
   // Datos de la empresa
@@ -311,7 +319,7 @@ doc.setFontSize(20);
 doc.setFont(undefined, 'bold');
 doc.text(this.txtLenyenda3, 115, footerY + 50, { align: 'center' });
 
-  doc.save(this.code +'.pdf');
+  doc.save(this.codigo +'.pdf');
 }
 
 

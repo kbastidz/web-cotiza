@@ -36,7 +36,7 @@
           </div>
           <div class="invoice-title col-12 md:col-6">
             <h1>INVOICE</h1>
-            <p>NO. INVOICE: {{code}}</p>
+            <p>NO. INVOICE:  <input pInputText [(ngModel)]="codigo" (keyup)="onInputChange($event)"/></p>
             <p>INVOICE DATE: <p-calendar inputId="calendar" [(ngModel)]="value5"></p-calendar></p>
           </div>
         </div>
