@@ -17,7 +17,7 @@ export class DashboardComponent implements OnInit {
     lblDireccion: string = 'CHARLOTTE, NORTH CAROLINE, EE. UU.';
     lblTrabajador: string = 'WILSON SOLORZANO RODRIGUEZ';
     txtLenyenda1: string = 'IF YOU HAVE ANY QUESTIONS CONCERNING THIS INVOICE CONTACT US.';
-    txtLenyenda2: string = 'wilsonsilirzano864@gmail.com OR +1 (704) 235-7771';
+    txtLenyenda2: string = 'wilsonsolorzano864@gmail.com or +1 (704) 235-7771';
     txtLenyenda3: string = 'THANKS YOU FOR TOUR BUSINESS!';
 
     randomNumber: number = 0;
@@ -45,7 +45,7 @@ export class DashboardComponent implements OnInit {
     }
 
     generateRandom8Digits(): void {
-      this.randomNumber =  Math.floor(100 + Math.random() * 900);
+      this.randomNumber =  Math.floor(10 + Math.random() * 90);
     }
 
     isGeneratingPDF = false;
@@ -123,7 +123,8 @@ export class DashboardComponent implements OnInit {
 
     isTaxEnabled: boolean = true;
   getTax(): number {
-    return this.isTaxEnabled ? this.getSubtotal() * 0.08 : 0;
+    //0.08 
+    return this.isTaxEnabled ? this.getSubtotal() * 0.00 : 0;
   }
 
   getTotal(): number {
@@ -162,14 +163,14 @@ generatePDF() {
   doc.setFontSize(25);
   doc.setTextColor(21, 86, 152);
   doc.setFont(undefined,'bold'); // Establece el estilo de fuente a negrita
-  doc.text('INVOICE', 120, 30);
+  doc.text('INVOICE', 130, 30);
   doc.setFont(undefined,'normal');
   doc.setTextColor(0, 0, 0);
 
   // Número de factura y fecha alineados a la derecha
   
   doc.setFontSize(12);
-  doc.text(`NO. INVOICE: ${this.code}`, 120, 40);
+  doc.text(`N°. INVOICE: ${this.code}`, 120, 40);
   doc.text(`INVOICE DATE: ${this.formatDate(this.value5)}`, 120, 50);
 
   // Datos de la empresa
@@ -273,28 +274,29 @@ const taxX = 168;      // Alineación para TAX
 const totalX = 168;    // Alineación para TOTAL
 
 // Añadir bordes para los totales
-//doc.rect(130, totalsStartY, 60, 30); // Marco general
+doc.rect(130, totalsStartY, 60, 30); // Marco general
 doc.rect(130, totalsStartY, 60, 10); // Borde SUBTOTAL
 doc.rect(130, totalsStartY + 10, 60, 10); // Borde TAX
-//doc.rect(130, totalsStartY + 20, 60, 10); // Borde TOTAL
+doc.rect(130, totalsStartY + 20, 60, 10); // Borde TOTAL
 
 // Añadir textos de los totales
+doc.setFont(undefined, 'bold');
 doc.text(` SUBTOTAL:`, 130, totalsStartY + 7);
-//doc.text(` TAX 8%:`, 130, totalsStartY + 17);
-doc.text(` TOTAL:`, 130, totalsStartY + 17); //27
-
+doc.text(` TAX 0%:`, 130, totalsStartY + 17);
+doc.text(` TOTAL:`, 130, totalsStartY + 27);
+doc.setFont(undefined,'normal');
 // Línea vertical divisoria
-doc.line(160, totalsStartY, 160, totalsStartY + 20); //30
+doc.line(160, totalsStartY, 160, totalsStartY + 30);
 
 // Añadir valores de los totales
-doc.text(`$  ${new Intl.NumberFormat('en-US').format(this.getSubtotal())}`, subtotalX, totalsStartY + 7);
-//doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTax())}`, taxX, totalsStartY + 17);
-doc.text(`$  ${new Intl.NumberFormat('en-US').format(this.getTotal())}`, totalX, totalsStartY + 17);//27
+doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getSubtotal())}`, subtotalX, totalsStartY + 7);
+doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTax())}`, taxX, totalsStartY + 17);
+doc.text(`$ ${new Intl.NumberFormat('en-US').format(this.getTotal())}`, totalX, totalsStartY + 27);
 
 // Línea para la firma del cliente
 doc.line(30, footerY, 90, footerY); // Coordenadas (x1, y1, x2, y2)
 doc.setFont(undefined, 'bold');
-doc.text('COMPANY SIGNATURE', 40, footerY + 8);
+doc.text('COMPANY SIGNATURE', 36, footerY + 8);
 
 // Línea para la firma del proveedor
 doc.line(120, footerY, 180, footerY);
