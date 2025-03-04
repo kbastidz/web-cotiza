@@ -178,8 +178,8 @@ generatePDF() {
   // Número de factura y fecha alineados a la derecha
   
   doc.setFontSize(12);
-  doc.text(`N°. INVOICE: ${this.codigo}`, 120, 40);
-  doc.text(`INVOICE DATE: ${this.formatDate(this.value5)}`, 120, 50);
+  doc.text(`N°. INVOICE             : ${this.codigo}`, 120, 40);
+  doc.text(`INVOICE DATE         : ${this.formatDate(this.value5)}`, 120, 50);
 
   // Datos de la empresa
   doc.setTextColor(21, 86, 152);
